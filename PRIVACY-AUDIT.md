@@ -33,7 +33,7 @@ The source distribution and installable extension were checked as actual ZIP arc
 
 The artifacts are unsigned, and final Windows/Playnite runtime validation remains necessary. The supplied tests do not validate real launcher execution, UI rendering or metadata-provider matching. No independent security audit is claimed.
 
-No distribution license has been chosen or included. Select the intended license before presenting the repository as open source. Public GitHub publishing has not been performed.
+The project uses the MIT License. The source repository was initially created privately; public release remains subject to final validation.
 
 The ignore file cannot protect files already tracked by Git or future files added with force. Review the actual staged changes before publishing. Runtime folder paths shown in the UI and stored in local preferences are expected user data and should remain outside the repository.
 

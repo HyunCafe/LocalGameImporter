@@ -85,3 +85,7 @@ Like any Playnite extension, it runs with Playnite's user permissions. It does n
 Target: **Playnite 10.63 / SDK 6.18.0 / .NET Framework 4.6.2**. The complete plugin compiles against the real SDK and framework references. Source tests use synthetic fixtures and an in-memory API/dispatcher. Live Windows loading, themed layout, launcher execution and provider downloads are not established by those tests.
 
 See `BUILD.md`, `TESTING.md`, `AUDIT.md` and `PRIVACY-AUDIT.md`. This is custom unsigned software; no independent audit or code-signing certificate is claimed. Publishing to a public repository is a separate step.
+
+## License
+
+Licensed under the [MIT License](LICENSE).
