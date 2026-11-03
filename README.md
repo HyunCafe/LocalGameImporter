@@ -1,6 +1,6 @@
 # Local Game Importer
 
-A native Playnite add-on by **HyunCafe** for discovering installed Windows games in local folders. Version **0.3.0**.
+A native Playnite add-on by **HyunCafe** for discovering installed Windows games in local folders. Version **0.3.1**.
 
 ## Why this extension exists
 
@@ -20,7 +20,7 @@ This unofficial extension does not download or install games, bypass DRM, execut
 
 ## Install or update
 
-1. Drag `LocalGameImporter-0.3.0.pext` into Playnite Desktop and follow its installation prompt. Restart Playnite.
+1. Drag `LocalGameImporter-0.3.1.pext` into Playnite Desktop and follow its installation prompt. Restart Playnite.
 2. Open **Main menu → Extensions → Local Games → Review games and automation**.
 3. On a new installation, choose **Scan folders... → Add folder** and select the directories containing your games. There are no preconfigured paths. Up to 16 non-overlapping local folders can be scanned together.
 4. Review titles and launchers, then click **Import checked**. Clear matches are checked initially. For another candidate, select it and click **Use selected launcher**.
@@ -37,6 +37,21 @@ This release retains the extension GUID used by 0.2, so it updates the existing 
 - Lists `.bat` and `.cmd` wrappers for explicit manual selection. They are never imported automatically or executed during discovery. Their contents are hashed to detect changes between selection and import, not analyzed for safety.
 - Preserves existing Playnite entries and their launch settings. Imported entries use normal file play actions, so they continue working if the add-on is removed.
 - Provides status/reason and metadata columns, plus counts of added, existing, excluded, ready and unresolved rows.
+
+## Faster manual review (v0.3.1)
+
+- Click an **Add** checkbox once to toggle that game's inclusion. **Ctrl/Shift-click** game titles to select multiple rows. **Check selected** / **Uncheck selected** changes the import checkboxes, not launcher approval.
+- Completed entries (`ADDED` and `EXISTING`) are hidden in the review list by default. **Show imported / existing games** reveals them as read-only rows. They are still counted in the summary and preserved in Playnite. `NAME MATCH` stays visible because a same-title match alone does not prove an identical installation.
+- **Confirm checked EXEs...** opens a scrollable preview of the exact proposed launcher paths. Only explicitly checked regular EXE candidates can be bulk-approved. Read the paths and click Confirm to mark eligible rows `MANUAL`.
+- Incomplete scans can be explicitly approved after verifying the listed EXE, but a manual decision does not certify a complete scan. `.bat`/`.cmd`, mod loaders, launcher wrappers, title conflicts, existing-library duplicates, and stale/unsafe choices remain held for individual review.
+- **Import checked** shows the names and statuses of blocked games. If some checked entries are already `READY` or `MANUAL`, you can import only those confirmed entries while leaving the others unchanged. A partial import turns **automatic importing off**.
+- After importing, use **Select imports for metadata** and Playnite's **Download metadata → Selected games only → Only download missing metadata** workflow.
+
+Bulk confirmation is a user-directed review, not an automatic safety assessment of executables. Test important launchers in Playnite before relying on them. Game files are never launched while scanning or approving candidates.
+
+## Ignoring games without deleting them
+
+An **Ignore** checkbox is separate from **Add**. Tick the Ignore column for any unresolved entry (including utility or same-title rows), select **Move marked to ignored...** and confirm the full folder-path preview. The entry leaves the normal review list immediately. Open **Show ignored games (only)** to view the ignore section, tick its Ignore checkboxes, then choose **Restore marked ignored...**. Restore returns a candidate to review without importing it. Ignore decisions persist independently per configured scan folder across Playnite restarts and rescans, using the game-folder path rather than title. Ignored entries cannot be auto-imported. The extension never moves or deletes game files and never deletes Playnite library entries. Import and ignore checkboxes are intentionally separate to prevent accidents.
 
 ## Folder organization and incomplete results
 

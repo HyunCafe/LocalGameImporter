@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.3.1 development — persistent ignore queue (r3)
+- Added per-scan-root persistent Ignored queue independent of automatic import exclusions.
+- Added separate one-click Ignore checkboxes, explicit move/restore actions, full path previews and an ignored-only view.
+- Ignored game folders never import automatically, are hidden from the default review and remain recoverable without touching game files.
+- Added regression tests for persistence, restoring, root-specific paths and import safeguards.
+
+## 0.3.1 (development candidate)
+
+- Make import checkboxes toggle on the first click, without requiring a row to enter editing mode.
+- Hide completed (`ADDED`) and already represented (`EXISTING`) games by default; provide a read-only Show imported / existing games toggle without losing metadata selection or counts.
+- Keep same-title but unverified (`NAME MATCH`) games visible and unchecked; no automatic duplicate suppression by title alone.
+- Allow Ctrl/Shift multi-row selection and Check selected / Uncheck selected commands.
+- Add explicit scrollable confirmation for checked EXE launchers, with per-game paths and status.
+- Hold scripts, mod loaders, changed candidates, same-title conflicts and existing-library duplicates for individual review.
+- Replace generic all-or-nothing import error with named blockers and an optional partial import of validated games.
+- Disable automation on partial import; preserve prior exclusions, configuration, and existing game entries.
+- No additional network access, launcher execution during scanning, or automatic metadata download.
+
 ## 0.3.0
 
 - Add up to 16 simultaneous scan folders with independent first-review state and exclusions.
