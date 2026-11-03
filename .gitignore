@@ -1,0 +1,67 @@
+# Build outputs and release archives are produced locally or attached to releases.
+**/bin/
+**/obj/
+/artifacts/
+/dist/
+*.dll
+*.exe
+*.pdb
+*.pext
+*.zip
+*.nupkg
+
+# Per-user Playnite settings and data must never enter the repository.
+**/ExtensionsData/
+settings.json
+*.local.json
+local-settings.*
+**/game-inventory*
+**/*inventory*.csv
+**/*inventory*.json
+**/backups/
+**/saves/
+*.log
+
+# Credentials and local environment files.
+.env
+.env.*
+credentials*.json
+secrets*.json
+*.key
+*.pem
+*.pfx
+*.p12
+*.jks
+
+# Temporary fixtures, test output and editor state.
+**/test-results/
+**/tests-output/
+**/fixtures/
+*.tmp
+*.temp
+*.bak
+.vs/
+*.user
+*.suo
+.vscode/settings.json
+.DS_Store
+Thumbs.db
+
+# Additional local editor state, browser captures and private databases.
+.vscode/
+.idea/
+.fleet/
+*.code-workspace
+*.userprefs
+*.har
+*.pcap
+*.pcapng
+*.dmp
+*.etl
+*.trace
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+*.db-journal

@@ -1,0 +1,13 @@
+# Preserve source checksums across operating systems.
+* text=auto
+*.md text eol=lf
+*.txt text eol=lf
+*.cs text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.ps1 text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+*.pext binary
+*.dll binary
+*.zip binary

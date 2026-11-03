@@ -1,0 +1,60 @@
+{
+  "version": "0.3.0",
+  "publisher": "HyunCafe",
+  "target": "Playnite 10.63 / SDK 6.18.0 / .NET Framework 4.6.2",
+  "compiler": "Roslyn 5.0.0.0 from PowerShell 7.6.9",
+  "language": "C# 5",
+  "optimization": "Release",
+  "architecture": "AnyCPU",
+  "deterministic": true,
+  "source_order": [
+    "Scanner.cs",
+    "Host.cs",
+    "Plugin.cs"
+  ],
+  "source_sha256": {
+    "Scanner.cs": "12767d0cb8205e3f67e5bcfc1e359c15a408657e3742b2f10d2e0058f357c21a",
+    "Host.cs": "0ac4ae4e74f32a5d2134221f93d7586e5bae5e364a17bbc99c1c1056b55e46ec",
+    "Plugin.cs": "042d8ec0e02a59cb7664fc16d1cc73a6d40491170afcd8701088e5cbf5d74cc2"
+  },
+  "output": {
+    "file": "LocalGameImporter.dll",
+    "size_bytes": 63488,
+    "sha256": "9013a1c9098b35d621c9d48d512d3b7e5bd00f1625aeed7e016e5dae1d759875"
+  },
+  "rebuild_comparison": "PASS: second build was byte-identical",
+  "build_input_sha256": {
+    "PlayniteSDK.6.18.0.nupkg": "63ae943bf226a782738d3d6b9977dcb77861e5d2ea1aadcf620332618c93e236",
+    "Microsoft.NETFramework.ReferenceAssemblies.net462.1.0.3.nupkg": "ee692a845743500910855d4c330ca6e9ef87c16e16f740e4474d187185d66e21",
+    "Playnite.SDK.dll": "ce7511941aba4d4b17dd7b226fadfd0ecefdf51ab73775b25631089fd7542fc7",
+    "Framework/mscorlib.dll": "f8b1e8838944f96ea36b670b32a54c0eb0eca3743946363acc676d1d7ef893b0",
+    "Framework/System.dll": "19359fe1fdef82d265afdd0f1ba15e978795ea483a63e6f2881f993bd20bbd65",
+    "Framework/System.Core.dll": "8debc6f7136250f07a8cb8a576de71bdbe7e9618b6c70abc8a5f7a98222671a3",
+    "Framework/System.Xaml.dll": "3ee16b8462e1738651c6c26a97789964c9dba4c22b193eb8e37cd0c355ad63c0",
+    "Framework/System.Xml.dll": "6c4eb8a1075180637a1569c187599251217f295cd4a874ad5177ae01f9523787",
+    "Framework/System.Runtime.Serialization.dll": "fdc19c1388e847b10a56954b506196c932d0486ab0eda18f997427936c917d45",
+    "Framework/WindowsBase.dll": "d81078aea0a312805c72d6365887884bc67009f2e86c1efc5cc50d1d1de91302",
+    "Framework/PresentationCore.dll": "c897978d02ed123711673307354f97a0236e48f286b5849f1b9dfdb285138f04",
+    "Framework/PresentationFramework.dll": "4c9db600cea708aa6a52be87982a6b1803105519a72eea198ed85bd2b886fc41",
+    "Compiler/Microsoft.CodeAnalysis.dll": "c092b44ecf91e643f32e0a7127ae1cc4bb7b8b8430ee165d52f261287709deb0",
+    "Compiler/Microsoft.CodeAnalysis.CSharp.dll": "3afd2842e558e7b45b6ea2ba18e7658a920ec1a68eb0017831bec62238edcbf5"
+  },
+  "pe_clr_inspection": {
+    "assembly": "LocalGameImporter",
+    "version": "0.3.0.0",
+    "namespace": "LocalGameImporter",
+    "debug_records": [
+      "Reproducible"
+    ],
+    "embedded_or_external_pdb": false,
+    "authenticode_signed": false,
+    "strong_name_signed": false
+  },
+  "validation": {
+    "full_sdk_compile": "PASS",
+    "scanner_fixtures": "PASS",
+    "simulated_host_and_migration": "PASS",
+    "live_windows_playnite": "NOT CONFIRMED"
+  },
+  "bundled_third_party_runtime_libraries": []
+}
