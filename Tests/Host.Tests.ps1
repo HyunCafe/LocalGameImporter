@@ -50,6 +50,91 @@ $a=FreshApi;$row=(Rows)[0];[IO.File]::AppendAllText($path,'changed');ImportRows 
 Assert ($a.Database.Games.Count -eq 0 -and $row.Status -eq 'CHANGED') 'stale candidate not imported'
 [IO.File]::WriteAllBytes($path,$bytes);[IO.File]::SetLastWriteTimeUtc($path,[datetime]::UtcNow.AddDays(-5));[IO.File]::SetCreationTimeUtc($path,[datetime]::UtcNow.AddDays(-5))
 Write-Host 'PASS: import preserves working arguments/other entries, rechecks duplicates and changes, and handles partial add exceptions.'
+# Batch review and manual import safeguards (pure host decisions).
+$a=FreshApi;$row=(Rows)[0]
+Assert ([LocalGameImporter.Host]::ImportEligible($row)) 'READY + checked is eligible'
+$row.Status='REVIEW'
+Assert (-not [LocalGameImporter.Host]::ImportEligible($row)) 'REVIEW is not importable without confirmation'
+Assert ([LocalGameImporter.Host]::BulkEligible($row)) 'reviewed EXE candidate is bulk-confirmable only on explicit user action'
+$row.Status='INCOMPLETE'
+Assert ([LocalGameImporter.Host]::BulkEligible($row)) 'incomplete EXE can be explicitly approved with incomplete warning'
+$row.Status='NAME MATCH'
+Assert (-not [LocalGameImporter.Host]::BulkEligible($row)) 'same-title conflict cannot be bulk-confirmed'
+$row.Status='EXCLUDED'
+Assert ([LocalGameImporter.Host]::BulkEligible($row)) 'previously excluded EXE only by explicit checked approval'
+$row.Choice.ScriptWrapper=$true
+Assert (-not [LocalGameImporter.Host]::BulkEligible($row)) 'script wrapper cannot be bulk-confirmed'
+$row.Choice.ScriptWrapper=$false;$row.Choice.ModLoader=$true
+Assert (-not [LocalGameImporter.Host]::BulkEligible($row)) 'mod loader cannot be bulk-confirmed'
+$row.Choice.ModLoader=$false;$row.Choice.LaunchWrapper=$true
+Assert (-not [LocalGameImporter.Host]::BulkEligible($row)) 'launch wrapper cannot be bulk-confirmed'
+$row.Choice.LaunchWrapper=$false;$row.Include=$false
+Assert (-not [LocalGameImporter.Host]::BulkEligible($row)) 'unchecked EXE cannot be bulk-confirmed'
+$row.Include=$true;$row.Status='REVIEW'
+Assert (([LocalGameImporter.Host]::BlockedNames([LocalGameImporter.GameRow[]]@($row))) -match 'Demo Game \[REVIEW\]') 'blocked import shows offending name and status'
+ImportRows @($row) $false
+Assert ($a.Database.Games.Count -eq 0) 'direct manual import refuses unconfirmed REVIEW row'
+# The review filters must hide completed games without losing their internal rows.
+$row.Status='ADDED';$row.Include=$false
+Assert (-not [LocalGameImporter.Host]::ReviewVisible($row,$false)) 'ADDED hidden by default'
+Assert ([LocalGameImporter.Host]::ReviewVisible($row,$true)) 'ADDED visible when showing completed'
+Assert (-not $row.CanToggleImport) 'ADDED checkbox disabled'
+$row.Status='EXISTING'
+Assert (-not [LocalGameImporter.Host]::ReviewVisible($row,$false)) 'EXISTING hidden by default'
+Assert (-not $row.CanToggleImport) 'EXISTING checkbox disabled'
+$row.Status='UTILITY'
+Assert ([LocalGameImporter.Host]::ReviewVisible($row,$false) -and -not $row.CanToggleImport) 'utility visible but cannot be selected for import'
+$row.Status='INCOMPLETE'
+Assert ([LocalGameImporter.Host]::ReviewVisible($row,$false) -and $row.CanToggleImport) 'unfinished game remains available for review'
+$row.IsGroup=$true
+Assert (-not $row.CanToggleImport) 'category row checkbox disabled'
+$row.IsGroup=$false
+$row.IsRoot=$true
+Assert (-not $row.CanToggleImport) 'scan root checkbox disabled'
+$row.IsRoot=$false
+# Persistent Ignore queue: separate from Add selection, per-root, and reversible.
+$a=FreshApi;$row=(Rows)[0];$row.MarkIgnore=$true
+Assert ($row.CanMarkIgnore) 'normal game may be marked for ignore'
+Assert (-not $row.Ignored) 'new game begins visible'
+$count=[LocalGameImporter.Host]::SetIgnoredForMarked([LocalGameImporter.GameRow[]]@($row),$true)
+Assert ($count -eq 1 -and $row.Ignored -and -not $row.Include -and -not $row.MarkIgnore) 'ignore clears Add and selection'
+Assert (-not [LocalGameImporter.Host]::ReviewVisible($row,$false,$false)) 'ignored game hidden from default review'
+Assert ([LocalGameImporter.Host]::ReviewVisible($row,$false,$true)) 'ignored-only view shows row'
+Assert (-not [LocalGameImporter.Host]::ImportEligible($row) -and -not [LocalGameImporter.Host]::BulkEligible($row)) 'ignored candidate cannot import'
+$row.Include=$true
+ImportRows @($row) $false
+Assert ($a.Database.Games.Count -eq 0) 'direct ignored manual row cannot import even with Add checked'
+$row.Include=$false
+$p=GetField 'prefs';$key=[LocalGameImporter.Scanner]::FolderKey($Root,$row.Folder)
+Assert ($p.Folders[0].Ignored.Contains($key)) 'ignored key saved per configured scan root'
+$p.Folders[0].ReviewedRoot=[LocalGameImporter.Scanner]::Canonical($Root)
+[LocalGameImporter.Host]::StartupOrRefresh();WaitCallback $a;$a.MainView.UIDispatcher.Drain()
+Assert ($a.Database.Games.Count -eq 0) 'reviewed scan root never auto imports an ignored game'
+# Same title on another scan root must not be ignored by a title-level rule.
+$another=Join-Path $Base ('different-drive-'+[guid]::NewGuid().ToString('N'))
+$extra=New-Object LocalGameImporter.FolderPreferences;$extra.Root=$another;$p.Folders.Add($extra)
+$other=(Rows)[0];$other.ScanRoot=$another;$other.Folder=Join-Path $another 'Demo Game'
+$scan=New-Object LocalGameImporter.ScanResult
+$scan.Rows.Add($row);$scan.Rows.Add($other)
+$parameters=New-Object 'object[]' 1
+$parameters[0]=$scan.PSObject.BaseObject
+$null=$hostType.GetMethod('ApplyIgnored',$flags).Invoke($null,$parameters)
+Assert ($row.Ignored -and -not $other.Ignored) 'ignore key is isolated by root despite matching game titles'
+$pathToSettings=GetField 'dataPath';SetField 'api' $null
+[LocalGameImporter.Host]::Initialize($a,$pathToSettings)
+Assert ((GetField 'prefs').Folders[0].Ignored.Contains($key)) 'ignored state survives settings reload'
+$row.MarkIgnore=$true
+$count=[LocalGameImporter.Host]::SetIgnoredForMarked([LocalGameImporter.GameRow[]]@($row),$false)
+Assert ($count -eq 1 -and -not $row.Ignored -and -not $row.Include) 'restoring makes a candidate visible but does not import'
+Assert (-not (GetField 'prefs').Folders[0].Ignored.Contains($key)) 'restore removes persisted ignore key'
+$row.Status='UTILITY';$row.MarkIgnore=$true
+Assert ($row.CanMarkIgnore -and -not $row.CanToggleImport) 'utility may be ignored without becoming importable'
+$row.Status='EXISTING';$row.MarkIgnore=$false
+Assert (-not $row.CanMarkIgnore) 'existing Playnite entries cannot be ignored or altered'
+Write-Host 'PASS: persistent per-root ignored list, reversible view, and import protections.'
+Write-Host 'PASS: completed-row filter, disabled checkboxes, and batch EXE gates.'
+Write-Host 'PASS: bulk EXE gates, blocked-game diagnostics, and unconfirmed manual import guard.'
+
 $a=FreshApi
 [LocalGameImporter.Host]::StartupOrRefresh();WaitCallback $a;$a.MainView.UIDispatcher.Drain()
 Assert ($a.Database.Games.Count -eq 0) 'first startup only discovers'
@@ -88,7 +173,7 @@ Assert ([LocalGameImporter.Host]::MetadataState($g) -match 'Core fields present;
 Assert ([LocalGameImporter.Host]::ImportedGames().Count -eq 1) 'metadata handoff limited to entries created in this session'
 Write-Host 'PASS: automatic new-batch selection, existing metadata preservation and honest missing/match status.'
 $a=FreshApi;$wrapper=Join-Path $Root 'Demo Game/start_game.cmd';[IO.File]::WriteAllText($wrapper,'rem test wrapper only')
-$row=(Rows)[0];$row.Choice=$row.Candidates | Where-Object ScriptWrapper;$row.Status='MANUAL';$row.Tracking='Folder';$row.WorkingDirectory='.'
+$row=(Rows)[0];$row.Choice=$row.Candidates | Where-Object ScriptWrapper;$row.Status='MANUAL';$row.Include=$true;$row.Tracking='Folder';$row.WorkingDirectory='.'
 ImportRows @($row) $false
 $action=$a.Database.Games[0].GameActions[0]
 Assert ($action.Path -eq $wrapper -and $action.TrackingMode -eq 'Directory' -and $action.TrackingPath -eq $row.Folder -and $action.WorkingDir -eq $row.Folder) 'manual wrapper launch/tracking settings retained'

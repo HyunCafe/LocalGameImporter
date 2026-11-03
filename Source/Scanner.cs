@@ -28,6 +28,15 @@ namespace LocalGameImporter {
     public sealed class GameRow {
         public string ScanRoot { get; set; }
         public bool Include { get; set; }
+        // Ignore selection and persistent ignored state are distinct from Add.
+        // An ignored row may be displayed for restoration, never imported.
+        public bool MarkIgnore { get; set; }
+        public bool Ignored { get; set; }
+        public bool CanMarkIgnore { get { return !IsGroup && !IsRoot && Status!="ADDED" && Status!="EXISTING"; } }
+        // A visible checkbox is only editable for game candidates, never completed
+        // imports, existing library entries, scan-root placeholders or utilities.
+        public bool CanToggleImport { get { return !IsGroup && !IsRoot &&
+            Status!="ADDED" && Status!="EXISTING" && Status!="UTILITY" && !Ignored; } }
         public string Title { get; set; }
         public string Folder { get; set; }
         public string Status { get; set; }
