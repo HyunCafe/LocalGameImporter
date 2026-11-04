@@ -1,6 +1,6 @@
 # Local Game Importer
 
-A native Playnite add-on by **HyunCafe** for discovering installed Windows games in local folders. Version **0.3.1**.
+A native Playnite add-on by **HyunCafe** for discovering installed Windows games in local folders. Version **0.3.2**.
 
 ## Why this extension exists
 
@@ -20,7 +20,7 @@ This unofficial extension does not download or install games, bypass DRM, execut
 
 ## Install or update
 
-1. Drag `LocalGameImporter-0.3.1.pext` into Playnite Desktop and follow its installation prompt. Restart Playnite.
+1. Drag `LocalGameImporter-0.3.2.pext` into Playnite Desktop and follow its installation prompt. Restart Playnite.
 2. Open **Main menu → Extensions → Local Games → Review games and automation**.
 3. On a new installation, choose **Scan folders... → Add folder** and select the directories containing your games. There are no preconfigured paths. Up to 16 non-overlapping local folders can be scanned together.
 4. Review titles and launchers, then click **Import checked**. Clear matches are checked initially. For another candidate, select it and click **Use selected launcher**.
@@ -99,7 +99,7 @@ Like any Playnite extension, it runs with Playnite's user permissions. It does n
 
 Target: **Playnite 10.63 / SDK 6.18.0 / .NET Framework 4.6.2**. The complete plugin compiles against the real SDK and framework references. Source tests use synthetic fixtures and an in-memory API/dispatcher. Live Windows loading, themed layout, launcher execution and provider downloads are not established by those tests.
 
-See `BUILD.md`, `TESTING.md`, `AUDIT.md` and `PRIVACY-AUDIT.md`. This is custom unsigned software; no independent audit or code-signing certificate is claimed. Publishing to a public repository is a separate step.
+See `BUILD.md`, `TESTING.md`, historical `AUDIT.md` and `PRIVACY-AUDIT.md`, and `PRIVACY-AUDIT-v0.3.2.md` for current release-candidate verification. This is custom unsigned software; no independent audit or code-signing certificate is claimed.
 
 ## License
 

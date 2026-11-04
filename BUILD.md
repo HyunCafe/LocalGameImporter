@@ -26,12 +26,25 @@ From PowerShell 7.6.9, supply the actual extracted reference paths:
 
 Default input: `Source/Scanner.cs`, `Source/Host.cs`, `Source/Plugin.cs`. Default output: `LocalGameImporter.dll` next to the script. Build failures do not write a partial output.
 
-Compiler options: C# 5, release optimization, AnyCPU, deterministic DLL, assembly name `LocalGameImporter`. Source trees have no machine-specific file paths attached. The build emits no PDB/debug-symbol file. Compare the output hash with `BUILD-INPUTS.json` for the supplied release.
+Compiler options: C# 5, release optimization, AnyCPU, deterministic DLL, assembly name `LocalGameImporter`. Source trees have no machine-specific file paths attached. The build emits no PDB/debug-symbol file. `BUILD-INPUTS.json` is a historical v0.3.0 record and does not verify v0.3.2.
+
+## v0.3.2 Release build
+
+From the repository root, with dependencies already restored:
+
+```powershell
+pwsh -NoLogo -NoProfile -File ./Tools/Verify-Dependencies.ps1
+pwsh -NoLogo -NoProfile -File ./Tests/Run-Tests.ps1
+dotnet build LocalGameImporter.csproj -c Release --no-restore
+pwsh -NoLogo -NoProfile -File ./Tools/Package-Release.ps1
+```
+
+Release compilation explicitly uses `DebugType=none` and `DebugSymbols=false`.
 
 ## Package
 
-A `.pext` is a ZIP with `extension.yaml` and `LocalGameImporter.dll` at its root. Do not bundle Playnite core/SDK DLLs, local settings, logs, fixtures, inventories, saves or credentials. This release also includes the exact C# source and brief documentation for inspection.
+A `.pext` is a ZIP with `extension.yaml` and `LocalGameImporter.dll` at its root. Do not bundle Playnite core/SDK DLLs, local settings, logs, fixtures, inventories, saves or credentials. The v0.3.2 package contains only the DLL, manifest and generated checksum file. Source and documentation remain in the GitHub repository.
 
-`SHA256SUMS.txt` records each included file except itself. The release process verifies those hashes and compares a second DLL build byte-for-byte with the distributed binary. This demonstrates repeatability for the pinned inputs, not independent security certification. The binary is unsigned.
+`SHA256SUMS.txt` records each included file except itself. The packaging script verifies archived files against their expected hashes. No independent source-to-binary reproduction or security certification is claimed for v0.3.2. The binary is unsigned.
 
 For a repository, commit the source project. The `.gitignore` excludes local outputs, settings and common sensitive files; attach the separately built `.pext` to a release when ready. Review staged files before publishing: ignore rules do not sanitize files that are already tracked.

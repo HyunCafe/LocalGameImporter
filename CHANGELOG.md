@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.2
+- Disable Release debug metadata and PDB references.
+- Reduce the installable package to the DLL, manifest and checksums.
+- Preserve the extension identifier and existing settings.
+- Pass the existing scanner and simulated-host tests.
+- Make no changes to game discovery or import algorithms.
+- Record privacy verification separately from historical audits.
+- Live Playnite regression testing remains required.
+
+
 ## v0.3.1 development — persistent ignore queue (r3)
 - Added per-scan-root persistent Ignored queue independent of automatic import exclusions.
 - Added separate one-click Ignore checkboxes, explicit move/restore actions, full path previews and an ignored-only view.

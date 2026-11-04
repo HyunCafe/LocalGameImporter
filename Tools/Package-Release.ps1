@@ -1,21 +1,20 @@
 # Offline packaging only. Requires a successfully built and independently tested DLL.
-param([string]$DllPath='',[string]$OutputName='LocalGameImporter-0.3.1.pext')
-if($OutputName -cnotmatch '^LocalGameImporter-0\.3\.1(?:-r[1-9][0-9]*)?\.pext$'){throw 'Unsupported output filename; use LocalGameImporter-0.3.1[-rN].pext'}
+param([string]$DllPath='',[string]$OutputName='LocalGameImporter-0.3.2.pext')
+if($OutputName -cnotmatch '^LocalGameImporter-0\.3\.2(?:-r[1-9][0-9]*)?\.pext$'){throw 'Unsupported output filename; use LocalGameImporter-0.3.2[-rN].pext'}
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot -Parent
 if([string]::IsNullOrWhiteSpace($DllPath)){$DllPath=Join-Path $root 'bin/Release/net462/LocalGameImporter.dll'}
 $DllPath=[IO.Path]::GetFullPath($DllPath)
-if(-not (Test-Path -LiteralPath $DllPath -PathType Leaf)){throw "Build the v0.3.1 DLL first: $DllPath"}
+if(-not (Test-Path -LiteralPath $DllPath -PathType Leaf)){throw "Build the v0.3.2 DLL first: $DllPath"}
 $version=[Reflection.AssemblyName]::GetAssemblyName($DllPath).Version.ToString()
-if($version -ne '0.3.1.0'){throw "Refusing to package unexpected assembly version: $version"}
-$files=@('extension.yaml','README.md','CHANGELOG.md','AUDIT.md','PRIVACY-AUDIT.md','LICENSE',
-    'Source/Host.cs','Source/Plugin.cs','Source/Scanner.cs')
+if($version -ne '0.3.2.0'){throw "Refusing to package unexpected assembly version: $version"}
+$files=@('extension.yaml')
 foreach($file in $files){
     $path=Join-Path $root $file
     if(-not (Test-Path -LiteralPath $path -PathType Leaf)){throw "Missing file: $file"}
     if(([IO.File]::GetAttributes($path) -band [IO.FileAttributes]::ReparsePoint) -ne 0){throw "Linked file not allowed: $file"}
 }
-if(-not (([IO.File]::ReadAllText((Join-Path $root 'extension.yaml'))) -match '(?m)^Version: 0\.3\.1\s*$')){throw 'Manifest version mismatch'}
+if(-not (([IO.File]::ReadAllText((Join-Path $root 'extension.yaml'))) -match '(?m)^Version: 0\.3\.2\s*$')){throw 'Manifest version mismatch'}
 $archiveFiles=[ordered]@{}
 $archiveFiles['LocalGameImporter.dll']=[IO.File]::ReadAllBytes($DllPath)
 foreach($file in $files){$archiveFiles[$file]=[IO.File]::ReadAllBytes((Join-Path $root $file))}

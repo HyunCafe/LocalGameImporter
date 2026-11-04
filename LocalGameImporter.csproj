@@ -10,6 +10,10 @@
     <Nullable>disable</Nullable>
     <OutputType>Library</OutputType>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="PlayniteSDK" Version="[6.18.0]" />
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net462" Version="[1.0.3]" PrivateAssets="all" />
